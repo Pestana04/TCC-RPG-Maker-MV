@@ -1,0 +1,60 @@
+<quest 1:Em Busca do Passaporte|1|0>
+Converse com vovó,Converse com sua mãe,Pegue seu cartão,Agende a consulta,Espere até o horário,Vá para fora do prédio,Pegue o taxi,Encontre a UAI,Espere na fila,Tire a foto 3x4,Espere o atendente,Vá para casa,Espere seu passaporte
+Você conseguiu emitir seu passaporte.
+Seu objetivo é realizar todo o 
+processo necessário para emitir 
+seu primeiro passaporte.
+Converse com sua família e siga 
+cada etapa até pegar o documento
+</quest>
+
+<quest 2:O Relógio Quebrado|1|1>
+Examine o relógio quebrado,Consiga dinheiro,Compre um relógio,Conserte o relógio
+O relógio voltou a funcionar.
+O relógio do apartamento está 
+quebrado novamente.
+Talvez seja possível conseguir 
+dinheiro e mandar consertá-lo.
+</quest>
+
+<quest 3:O Notebook Velho|1|1>
+Encontre o notebook velho,Descubra se ele funciona,Conserte o notebook
+O notebook antigo voltou a funcionar.
+Existe um notebook velho guardado 
+em algum lugar do prédio.
+Talvez ainda seja possível 
+recuperá-lo.
+</quest>
+
+<quest 4:Viajar o Mundo|1|1>
+Use seu novo passaporte
+Novas viagens estarão disponíveis
+futuramente.
+Agora que você possui um 
+passaporte, poderá utilizá-lo para
+conhecer novos lugares.
+Este conteúdo representa uma 
+possibilidade de expansão futura 
+do jogo.
+</quest>
+
+<quest 5:Conclua o Tutorial|1|1>
+Vá até o círculo,Aprenda a correr,Interaja com o livro,Abra o menu,Abra as Missões,Rastreie outra missão,Rastreie o tutorial,Conclua o Tutorial
+Você concluiu o tutorial.
+Aprenda os principais controles e 
+sistemas utilizados durante o jogo.
+Você poderá consultar os controles 
+novamente pelo menu.
+</quest>
+
+<quest 6:Quest Exemplo|1|1>
+Rastreie esta missão
+Você concluiu a 
+missão de exemplo.
+Esta missão existe apenas 
+para ensinar como funciona 
+o rastreamento de missões.
+Depois de concluí-la, 
+volte a rastrear
+a missão do tutorial.
+</quest>
