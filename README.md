@@ -568,26 +568,6 @@ com foco em:
 
 ---
 
-# 📷 Screenshots
-
-## Apartamento
-
-![Apartamento](docs/screenshots/apartamento.png)
-
-## Computador
-
-![Computador](docs/screenshots/computador.png)
-
-## UAI
-
-![UAI](docs/screenshots/uai.png)
-
-## Tutorial
-
-![Tutorial](docs/screenshots/tutorial.png)
-
----
-
 # 🌎 Possibilidades futuras
 
 A estrutura do jogo permite futuras expansões.
