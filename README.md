@@ -482,7 +482,7 @@ Projeto desenvolvido como Trabalho de Conclusão de Curso.
 Clone o repositório:
 
 ```bash
-git clone <URL-DO-REPOSITORIO>
+git clone https://github.com/Pestana04/TCC---RPG-Maker-MV.git
 ```
 
 Abra a pasta do projeto e execute:
