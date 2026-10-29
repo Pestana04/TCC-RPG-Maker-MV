@@ -1,6 +1,7 @@
+
 /*:
- * @plugindesc v0.2.0 - HUD interativa de tutorial e tela de controles para o projeto Missão UAI.
- * @author Gustavo Pestana
+ * @plugindesc v0.3.0 - HUD interativa de tutorial e personalização de controles para o projeto Missão UAI.
+ * @author Gustavo Zavon Pestana
  *
  * @param Largura
  * @type number
@@ -41,8 +42,8 @@
  *
  * @param SwitchTutorialCompleto
  * @type switch
- * @desc Switch que libera a opção "Controles" no menu.
- * @default 0
+ * @desc Switch que desbloqueia a opção "Controles" e a troca SETAS/WASD.
+ * @default 29
  *
  * @param NomeComandoControles
  * @type string
@@ -50,25 +51,40 @@
  *
  * @help
  * ============================================================================
- * TutorialHUD
+ * TutorialHUD v0.3.0
  * ============================================================================
  *
- * Plugin criado para o projeto Missão UAI.
+ * Plugin desenvolvido para o projeto educacional Missão UAI - Passaporte,
+ * criado como Trabalho de Conclusão de Curso de Sistemas de Informação.
  *
- * Fornece:
+ * OBJETIVO
+ *
+ * Facilitar a adaptação de jogadores aos controles e sistemas do RPG Maker MV,
+ * oferecendo um tutorial interativo e uma tela permanente de configuração.
+ *
+ * ============================================================================
+ * FUNCIONALIDADES
+ * ============================================================================
  *
  * - HUD interativa de tutorial;
- * - representação visual dos controles;
- * - feedback das teclas pressionadas;
+ * - representação visual das teclas;
+ * - feedback visual das teclas pressionadas;
+ * - tutorial de movimentação, corrida e interação;
+ * - tutorial do menu e sistema de missões;
  * - integração com Galv's Quest Log;
  * - integração com MissaoHUD;
- * - detecção de rastreamento de missões;
- * - Quest Exemplo para ensinar rastreamento;
+ * - detecção automática do rastreamento de missões;
+ * - Quest Exemplo para ensinar o rastreamento;
+ * - conclusão silenciosa da Quest Exemplo;
  * - opção "Controles" no menu;
- * - tela permanente de consulta dos controles.
+ * - tela permanente de consulta e configuração de controles;
+ * - alternância entre movimentação por SETAS e WASD;
+ * - armazenamento persistente da preferência de movimentação;
+ * - bloqueio da troca de controles durante o tutorial;
+ * - desbloqueio através do switch Tutorial Completo.
  *
  * ============================================================================
- * ORDEM RECOMENDADA
+ * ORDEM RECOMENDADA DOS PLUGINS
  * ============================================================================
  *
  * AltMenuScreen
@@ -76,25 +92,103 @@
  * MissaoHUD
  * TutorialHUD
  *
- * TutorialHUD deve ficar abaixo dos plugins que alteram o menu e das
- * dependências de quests.
+ * TutorialHUD deve permanecer abaixo dos plugins que alteram o menu
+ * e das dependências responsáveis pelo sistema de missões.
+ *
+ * Não é necessário instalar um plugin complementar para utilizar WASD.
  *
  * ============================================================================
- * SWITCH
+ * SWITCH TUTORIAL COMPLETO
  * ============================================================================
  *
  * Configure o parâmetro:
  *
  * SwitchTutorialCompleto
  *
- * para o switch utilizado pelo projeto:
+ * No projeto Missão UAI:
  *
- * Tutorial Completo
+ * #0029 Tutorial Completo
  *
- * Quando esse switch estiver ON, a opção "Controles" aparecerá no menu.
+ * FUNCIONAMENTO:
+ *
+ * Tutorial Completo = OFF
+ *     - Opção "Controles" indisponível no menu.
+ *     - Alternância SETAS/WASD bloqueada.
+ *     - Tutorial utiliza exclusivamente as setas direcionais.
+ *
+ * Tutorial Completo = ON
+ *     - Opção "Controles" disponível no menu.
+ *     - Jogador pode alternar entre SETAS e WASD.
+ *     - Preferência armazenada automaticamente.
+ *
+ * O switch deve ser ativado quando o jogador:
+ *
+ * 1. Concluir todas as etapas do tutorial;
+ * 2. Escolher não realizar o tutorial.
  *
  * ============================================================================
- * SCRIPT CALLS
+ * SISTEMA DE MOVIMENTAÇÃO
+ * ============================================================================
+ *
+ * MODO SETAS:
+ *
+ *         ↑
+ *      ←  ↓  →
+ *
+ * MODO WASD:
+ *
+ *         W
+ *      A  S  D
+ *
+ * No modo WASD, as setas direcionais continuam funcionando.
+ *
+ * A troca é realizada na tela "Controles" utilizando:
+ *
+ * ENTER / Z / ESPAÇO
+ *
+ * Para retornar ao menu:
+ *
+ * ESC / X
+ *
+ * ============================================================================
+ * ARMAZENAMENTO DAS PREFERÊNCIAS
+ * ============================================================================
+ *
+ * O plugin utiliza o ConfigManager do RPG Maker MV para armazenar
+ * o modo de movimentação selecionado.
+ *
+ * ConfigManager.tutorialMovementMode
+ *
+ * Valores:
+ *
+ * 'arrows' = SETAS
+ * 'wasd'   = WASD
+ *
+ * A preferência é armazenada nas configurações gerais do jogo.
+ *
+ * Dessa forma, permanece salva mesmo após fechar a aplicação.
+ *
+ * A configuração é global e não depende do arquivo de save.
+ *
+ * ============================================================================
+ * PROTEÇÃO DURANTE O TUTORIAL
+ * ============================================================================
+ *
+ * Durante a execução do tutorial:
+ *
+ * - A movimentação permanece configurada para SETAS;
+ * - A troca para WASD não é permitida;
+ * - A HUD original permanece inalterada;
+ * - As instruções continuam utilizando as setas direcionais.
+ *
+ * Mesmo que WASD tenha sido selecionado anteriormente, um novo jogo
+ * deverá utilizar as setas enquanto o tutorial estiver bloqueado.
+ *
+ * Após concluir ou dispensar o tutorial, a preferência armazenada
+ * poderá ser utilizada novamente.
+ *
+ * ============================================================================
+ * SCRIPT CALLS - TUTORIAL
  * ============================================================================
  *
  * TutorialHUD.prepare();
@@ -112,44 +206,118 @@
  * TutorialHUD.end();
  *     Encerra a HUD.
  *
+ * ============================================================================
+ * SCRIPT CALLS - ETAPAS
+ * ============================================================================
+ *
  * TutorialHUD.step('movement');
+ *     Movimentação.
+ *
  * TutorialHUD.step('run');
+ *     Corrida.
+ *
  * TutorialHUD.step('interact');
+ *     Interação com objetos.
+ *
  * TutorialHUD.step('menu');
+ *     Acesso ao menu.
+ *
  * TutorialHUD.step('quests');
+ *     Acesso ao sistema de missões.
+ *
  * TutorialHUD.step('trackExample');
+ *     Rastreamento da Quest Exemplo.
+ *
  * TutorialHUD.step('trackTutorial');
+ *     Retorno ao rastreamento do tutorial.
+ *
  * TutorialHUD.step('finish');
+ *     Finalização do tutorial.
+ *
+ * ============================================================================
+ * SCRIPT CALLS - OUTROS
+ * ============================================================================
  *
  * TutorialHUD.setText('Título', 'Texto');
+ *     Define um texto personalizado.
  *
  * TutorialHUD.lastTrackedQuest();
+ *     Retorna a última missão rastreada.
  *
  * TutorialHUD.openControls();
  *     Abre diretamente a tela de controles.
  *
  * ============================================================================
+ * PLUGIN COMMANDS
+ * ============================================================================
+ *
+ * TUTORIALHUD CONTROLS
+ *
+ * Abre a tela de controles.
+ *
+ * ============================================================================
  * CHANGELOG
  * ============================================================================
  *
- * v0.2.0
- * - Adicionada opção "Controles" ao menu.
- * - Adicionada Scene própria de controles.
- * - Opção liberada pelo switch Tutorial Completo.
- * - Mantida integração com Galv's Quest Log.
- * - Mantida integração com MissaoHUD.
+ * v0.3.0 - PERSONALIZAÇÃO DE CONTROLES
+ *
+ * - Adicionada alternância entre SETAS e WASD;
+ * - Adicionado armazenamento persistente das preferências;
+ * - Integrado o sistema de movimentação ao ConfigManager;
+ * - Adicionada atualização visual das teclas selecionadas;
+ * - Implementado bloqueio da alternância durante o tutorial;
+ * - Mantidas as setas como alternativa no modo WASD;
+ * - Preservada a interface original do tutorial;
+ * - Mantida compatibilidade com MissaoHUD e Galv's Quest Log.
+ *
+ * --------------------------------------------------------------------------
+ *
+ * v0.2.0 - TELA DE CONTROLES
+ *
+ * - Adicionada opção "Controles" ao menu;
+ * - Adicionada Scene própria de controles;
+ * - Adicionada interface gráfica dos controles;
+ * - Implementado desbloqueio pelo switch Tutorial Completo;
+ * - Adicionado Script Call TutorialHUD.openControls();
+ * - Mantida integração com Galv's Quest Log;
+ * - Mantida integração com MissaoHUD;
  * - Mantida conclusão silenciosa da Quest Exemplo.
  *
- * v0.1.1
- * - "Abra as Missões" passa a ser concluído automaticamente ao rastrear
- *   a Quest Exemplo.
- * - Integração com MissaoHUD.silentComplete().
+ * --------------------------------------------------------------------------
  *
- * v0.1.0
- * - Primeira versão.
+ * v0.1.1 - INTEGRAÇÃO DE MISSÕES
+ *
+ * - "Abra as Missões" passa a ser concluído automaticamente ao rastrear
+ *   a Quest Exemplo;
+ * - Integração com MissaoHUD.silentComplete();
+ * - Implementada conclusão silenciosa da Quest Exemplo.
+ *
+ * --------------------------------------------------------------------------
+ *
+ * v0.1.0 - PRIMEIRA VERSÃO
+ *
+ * - Criada HUD interativa de tutorial;
+ * - Implementadas etapas de movimentação e corrida;
+ * - Implementadas etapas de interação e menu;
+ * - Adicionado feedback visual das teclas;
+ * - Adicionada integração inicial com Galv's Quest Log.
+ *
+ * ============================================================================
+ * AUTOR
+ * ============================================================================
+ *
+ * Gustavo Zavon Pestana
+ *
+ * Projeto: Missão UAI - Passaporte
+ * Engine: RPG Maker MV
+ * Instituição: Centro Universitário UniAcademia
+ * Curso: Sistemas de Informação
+ * Ano: 2026
+ *
  *
  * ============================================================================
  */
+
 
 var Imported = Imported || {};
 Imported.TutorialHUD = true;
@@ -2036,5 +2204,170 @@ var TutorialHUD = TutorialHUD || {};
 
         };
 
+    TutorialHUD.movementMode = 'arrows';
 
+    var _tutorialOriginalKeys = {
+        65: Input.keyMapper[65], // A
+        68: Input.keyMapper[68], // D
+        83: Input.keyMapper[83], // S
+        87: Input.keyMapper[87]  // W
+    };
+
+    TutorialHUD.canChangeMovement = function() {
+        var id = TutorialHUD.completeSwitch;
+        var completed = id > 0 &&
+            typeof $gameSwitches !== 'undefined' &&
+            $gameSwitches && $gameSwitches.value(id);
+
+        // Se a HUD do tutorial estiver ativa e visível,
+        // o jogador ainda está executando as instruções.
+        var inTutorial = typeof $gameSystem !== 'undefined' &&
+            $gameSystem &&
+            $gameSystem._tutorialHudActive &&
+            $gameSystem._tutorialHudVisible;
+
+        return !!completed && !inTutorial;
+    };
+
+    TutorialHUD.effectiveMovementMode = function() {
+        return TutorialHUD.canChangeMovement() &&
+        ConfigManager.tutorialMovementMode === 'wasd'
+            ? 'wasd' : 'arrows';
+    };
+
+    TutorialHUD.applyMovementMode = function() {
+        [65, 68, 83, 87].forEach(function(code) {
+            if (_tutorialOriginalKeys[code] === undefined) {
+                delete Input.keyMapper[code];
+            } else {
+                Input.keyMapper[code] = _tutorialOriginalKeys[code];
+            }
+        });
+
+        if (TutorialHUD.effectiveMovementMode() === 'wasd') {
+            Input.keyMapper[87] = 'up';
+            Input.keyMapper[65] = 'left';
+            Input.keyMapper[83] = 'down';
+            Input.keyMapper[68] = 'right';
+        }
+        Input.clear();
+    };
+
+    ConfigManager.tutorialMovementMode = 'arrows';
+
+    var _tutorialConfigMakeData = ConfigManager.makeData;
+    ConfigManager.makeData = function() {
+        var data = _tutorialConfigMakeData.call(this);
+        data.tutorialMovementMode = this.tutorialMovementMode;
+        return data;
+    };
+
+    var _tutorialConfigApplyData = ConfigManager.applyData;
+    ConfigManager.applyData = function(data) {
+        _tutorialConfigApplyData.call(this, data);
+        this.tutorialMovementMode = data &&
+        data.tutorialMovementMode === 'wasd' ? 'wasd' : 'arrows';
+        TutorialHUD.applyMovementMode();
+    };
+
+    TutorialHUD.toggleMovementMode = function() {
+        if (!TutorialHUD.canChangeMovement()) {
+            SoundManager.playBuzzer();
+            return false;
+        }
+        ConfigManager.tutorialMovementMode =
+            ConfigManager.tutorialMovementMode === 'wasd'
+                ? 'arrows' : 'wasd';
+        TutorialHUD.applyMovementMode();
+        ConfigManager.save();
+        return true;
+    };
+
+    // Reaplicar a configuração ao entrar no mapa (novo jogo, load, retorno).
+    var _tutorialMovementSceneMapStart = Scene_Map.prototype.start;
+    Scene_Map.prototype.start = function() {
+        _tutorialMovementSceneMapStart.call(this);
+        TutorialHUD.applyMovementMode();
+    };
+
+    // Atualizar quando o switch "Tutorial Completo" mudar.
+    var _tutorialMovementSwitchSetValue = Game_Switches.prototype.setValue;
+    Game_Switches.prototype.setValue = function(id, value) {
+        _tutorialMovementSwitchSetValue.call(this, id, value);
+        if (id === TutorialHUD.completeSwitch) {
+            TutorialHUD.applyMovementMode();
+        }
+    };
+
+    // O HUD original não muda; só bloqueia WASD durante sua execução.
+    ['start', 'show', 'hide', 'end'].forEach(function(name) {
+        var previous = TutorialHUD[name];
+        TutorialHUD[name] = function() {
+            var result = previous.apply(this, arguments);
+            TutorialHUD.applyMovementMode();
+            return result;
+        };
+    });
+
+    // Evita que o ENTER que abre "Controles" também altere o modo.
+    var _tutorialControlsInit = Window_TutorialControls.prototype.initialize;
+    Window_TutorialControls.prototype.initialize = function() {
+        _tutorialControlsInit.apply(this, arguments);
+        this._movementInputDelay = 10;
+    };
+
+    Window_TutorialControls.prototype.update = function() {
+        Window_Base.prototype.update.call(this);
+        if (this._movementInputDelay > 0) {
+            this._movementInputDelay--;
+            return;
+        }
+        if (Input.isTriggered('cancel')) {
+            SoundManager.playCancel();
+            SceneManager.pop();
+            return;
+        }
+        if (Input.isTriggered('ok')) {
+            if (TutorialHUD.toggleMovementMode()) {
+                SoundManager.playOk();
+                this.refresh();
+                this._movementInputDelay = 8;
+            }
+        }
+    };
+
+    // Preserva todo o desenho atual; substitui apenas a área de movimentação
+    // e a instrução do rodapé, sem alterar a HUD de tutorial.
+    var _tutorialControlsRefresh = Window_TutorialControls.prototype.refresh;
+    Window_TutorialControls.prototype.refresh = function() {
+        _tutorialControlsRefresh.call(this);
+
+        var wasd = TutorialHUD.effectiveMovementMode() === 'wasd';
+        var width = this.contents.width;
+        var height = this.contents.height;
+
+        // Área original: título e as quatro setas.
+        this.contents.clearRect(40, 78, 322, 126);
+        this.drawControlTitle('Movimentação - ' + (wasd ? 'WASD' : 'SETAS'),
+            45, 80, 315);
+        this.drawKeyBox(wasd ? 'W' : '↑', 125, 120, 45);
+        this.drawKeyBox(wasd ? 'A' : '←', 75, 163, 45);
+        this.drawKeyBox(wasd ? 'S' : '↓', 125, 163, 45);
+        this.drawKeyBox(wasd ? 'D' : '→', 175, 163, 45);
+
+        // Rodapé: inclui como alternar sem mover o restante do layout.
+        this.contents.clearRect(0, height - 54, width, 48);
+        this.contents.fontSize = 15;
+        this.changeTextColor('#BBBBBB');
+        this.drawText(
+            TutorialHUD.canChangeMovement()
+                ? 'ENTER / Z / ESPAÇO: alternar  |  ESC / X: voltar'
+                : 'Conclua o tutorial para liberar a troca dos controles',
+            0, height - 48, width, 'center'
+        );
+        this.resetTextColor();
+    };
+
+    // No início do jogo, até que o switch seja ON, sempre usar as setas.
+    TutorialHUD.applyMovementMode();
 })();
